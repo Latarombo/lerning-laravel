@@ -15,7 +15,7 @@ class SiswaController extends Controller
     public function index()
     {
         return SiswaResource::collection(
-            Siswa::with('kelas')->orderBy('nama_siswa', 'asc')->paginate(2)
+            Siswa::with('kelas')->get()
         );
     }
 
