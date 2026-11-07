@@ -30,32 +30,71 @@
     </form>
 
     <table border="1">
-        <tr>
-            <th>Nomor</th>
-            <th>Nama</th>
-            <th>TB</th>
-            <th>BB</th>
-            <th>Action</th>
-        </tr>
-        @foreach ($siswas as $s)
+        <thead>
             <tr>
-                <td>{{ $loop->iteration + ($siswas->currentPage() - 1) * $siswas->perPage() }}</td>
-                <td>{{ $s->nama_siswa }}</td>
-                <td>{{ $s->tb }}</td>
-                <td>{{ $s->bb }}</td>
-                <td>
-                    <a href="{{ route('siswa.edit', $s->id) }}" style="color:blue;">Edit</a>
-                    |
-                    <form action="{{ route('siswa.destroy', $s->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" style="color:red;" onclick="return confirm('Yakin hapus?')">
-                            Hapus
-                        </button>
-                    </form>
-                </td>
+                <th>Nomor</th>
+                <th>Nama</th>
+                <th>TB</th>
+                <th>BB</th>
+                <th>Kelas</th>
+                <th>Action</th>
             </tr>
-        @endforeach
+        </thead>
+        <tbody id="tbody">
+        </tbody>
     </table>
+
     {{ $siswas->links() }}
+
+    <script>
+        // Mengambil data
+        fetch('/api/siswa')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            });
+
+        // Menampilkan data
+        function tampilkanData() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const page = urlParams.get('page') || 1;
+
+            fetch('/api/siswa?page=' + page)
+                .then(res => res.json())
+                .then(result => {
+                    let html = '';
+                    result.data.forEach(function(item) {
+                        html += `
+                        <tr>
+                            <td>${item.id}</td>
+                            <td>${item.nama_siswa}</td>
+                            <td>${item.tb} cm</td>
+                            <td>${item.bb} kg</td>
+                            <td>${item.kelas ? item.kelas.nama_kelas : '-'}</td>
+                            <td>
+                                <a href="/siswa/edit/${item.id}" style="color: blue; margin-right: 6px;">Edit</a> |
+                                <button onclick="hapusData(${item.id})" style="color: red; cursor: pointer;">Hapus</button>
+                            </td>
+                        </tr>
+                        `;
+                    });
+                    document.getElementById('tbody').innerHTML = html;
+                });
+        }
+
+        // Menghapus data
+        function hapusData(id) {
+            if (!confirm('Yakin ingin menghapus data siswa ini?')) {
+                return;
+            }
+
+            fetch('/api/siswa/' + id, {
+                method: 'DELETE'
+            }).then(() => {
+                tampilkanData();
+            });
+        }
+
+        tampilkanData();
+    </script>
 @endsection
