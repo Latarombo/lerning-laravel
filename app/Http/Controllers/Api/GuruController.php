@@ -15,7 +15,7 @@ class GuruController extends Controller
     public function index()
     {
         return GuruResource::collection(
-            Guru::with('kelas')->get()
+            Guru::with('kelas')->orderBy('nama_guru', 'asc')->paginate(2)
         );
     }
 
