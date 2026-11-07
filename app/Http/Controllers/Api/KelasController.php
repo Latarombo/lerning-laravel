@@ -15,7 +15,7 @@ class KelasController extends Controller
     public function index()
     {
         return KelasResource::collection(
-            Kelas::with('guru')->get()
+            Kelas::with('guru')->orderBy('nama_kelas', 'asc')->paginate(2)
         );
     }
 
