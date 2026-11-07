@@ -14,7 +14,6 @@
         style="display:inline-block; margin-bottom:14px; padding:6px 14px; background-color:#2563eb; color:white; border-radius:4px;">Tambah
         Siswa</a>
 
-
     {{-- Searchbar dan filter --}}
     <form method="GET" action="{{ route('siswa.index') }}">
         <input type="text" name="keyword" value="{{ request('keyword') }}" placeholder="Cari Nama">
@@ -37,7 +36,6 @@
                 <th>TB</th>
                 <th>BB</th>
                 <th>Kelas</th>
-                <th>Action</th>
             </tr>
         </thead>
         <tbody id="tbody">
@@ -55,46 +53,55 @@
             });
 
         // Menampilkan data
-        function tampilkanData() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const page = urlParams.get('page') || 1;
-
-            fetch('/api/siswa?page=' + page)
-                .then(res => res.json())
-                .then(result => {
-                    let html = '';
-                    result.data.forEach(function(item) {
-                        html += `
-                        <tr>
-                            <td>${item.id}</td>
-                            <td>${item.nama_siswa}</td>
-                            <td>${item.tb} cm</td>
-                            <td>${item.bb} kg</td>
-                            <td>${item.kelas ? item.kelas.nama_kelas : '-'}</td>
-                            <td>
-                                <a href="/siswa/edit/${item.id}" style="color: blue; margin-right: 6px;">Edit</a> |
-                                <button onclick="hapusData(${item.id})" style="color: red; cursor: pointer;">Hapus</button>
-                            </td>
-                        </tr>
-                        `;
-                    });
-                    document.getElementById('tbody').innerHTML = html;
+        fetch('/api/siswa')
+            .then(res => res.json())
+            .then(result => {
+                let html = '';
+                result.data.forEach(function(item) {
+                    html += `
+                    <tr>
+                        <td>${item.id}</td>
+                        <td>${item.nama_siswa}</td>
+                        <td>${item.tb} cm</td>
+                        <td>${item.bb} kg</td>
+                        <td>${item.kelas ? item.kelas.nama_kelas : '-'}</td>
+                    </tr>
+                    `;
                 });
-        }
+                document.getElementById('tbody').innerHTML = html;
+            });
+
+        // Menambah data
+        fetch('/api/siswa', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                nama_siswa: 'Zidane',
+                bb: 45,
+                tb: 170,
+                kelas_id: {{ $kelas->first()->id ?? 1 }}
+            })
+        });
+
+        // Mengubah data
+        fetch('/api/siswa/1', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                nama_siswa: 'Zidane Terupdate',
+                bb: 50,
+                tb: 172,
+                kelas_id: {{ $kelas->first()->id ?? 1 }}
+            })
+        });
 
         // Menghapus data
-        function hapusData(id) {
-            if (!confirm('Yakin ingin menghapus data siswa ini?')) {
-                return;
-            }
-
-            fetch('/api/siswa/' + id, {
-                method: 'DELETE'
-            }).then(() => {
-                tampilkanData();
-            });
-        }
-
-        tampilkanData();
+        fetch('/api/siswa/1', {
+            method: 'DELETE'
+        });
     </script>
 @endsection

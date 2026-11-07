@@ -28,66 +28,30 @@
     </form>
 
     <table border="1">
-        <thead>
+        <tr>
+            <th>Nomor</th>
+            <th>Nama guru</th>
+            <th>Mata pelajaran</th>
+            <th>Action</th>
+        </tr>
+        @foreach ($gurus as $s)
             <tr>
-                <th>Nomor</th>
-                <th>Nama guru</th>
-                <th>Mata pelajaran</th>
-                <th>Action</th>
+                <td>{{ $loop->iteration + ($gurus->currentPage() - 1) * $gurus->perPage() }}  </td>
+                <td>{{ $s->nama_guru }}</td>
+                <td>{{ $s->mapel }}</td>
+                <td>
+                    <a href="{{ route('guru.edit', $s->id) }}" style="color:blue;">Edit</a> |
+
+                    <form action="{{ route('guru.destroy', $s->id) }}" method="POST" style="display:inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" style="color:red;" onclick="return confirm('Yakin hapus?')">
+                            Hapus
+                        </button>
+                    </form>
+                </td>
             </tr>
-        </thead>
-        <tbody id="tbody">
-        </tbody>
+        @endforeach
     </table>
     {{ $gurus->links() }}
-
-    <script>
-        // Mengambil data
-        fetch('/api/guru')
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-            });
-
-        // Menampilkan data
-        function tampilkanData() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const page = urlParams.get('page') || 1;
-
-            fetch('/api/guru?page=' + page)
-                .then(res => res.json())
-                .then(result => {
-                    let html = '';
-                    result.data.forEach(function(item) {
-                        html += `
-                        <tr>
-                            <td>${item.id}</td>
-                            <td>${item.nama_guru}</td>
-                            <td>${item.mapel}</td>
-                            <td>
-                                <a href="/guru/edit/${item.id}" style="color: blue; margin-right: 6px;">Edit</a> |
-                                <button onclick="hapusData(${item.id})" style="color: red; cursor: pointer;">Hapus</button>
-                            </td>
-                        </tr>
-                        `;
-                    });
-                    document.getElementById('tbody').innerHTML = html;
-                });
-        }
-
-        // Menghapus data
-        function hapusData(id) {
-            if (!confirm('Yakin ingin menghapus data guru ini?')) {
-                return;
-            }
-
-            fetch('/api/guru/' + id, {
-                method: 'DELETE'
-            }).then(() => {
-                tampilkanData();
-            });
-        }
-
-        tampilkanData();
-    </script>
 @endsection
