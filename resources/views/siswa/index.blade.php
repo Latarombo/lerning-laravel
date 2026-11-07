@@ -92,7 +92,7 @@
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                nama_siswa: 'Zidane Terupdate',
+                nama_siswa: 'Rizky Zidane',
                 bb: 50,
                 tb: 172,
                 kelas_id: {{ $kelas->first()->id ?? 1 }}

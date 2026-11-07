@@ -42,14 +42,14 @@
     {{ $gurus->links() }}
 
     <script>
-        // 1. Mengambil data
+        // Mengambil data
         fetch('/api/guru')
             .then(response => response.json())
             .then(data => {
                 console.log(data);
             });
 
-        // 2. Menampilkan data
+        // Menampilkan data
         fetch('/api/guru')
             .then(res => res.json())
             .then(result => {
@@ -66,32 +66,32 @@
                 document.getElementById('tbody').innerHTML = html;
             });
 
-        // 3. Menambah data
+        // Menambah data
         fetch('/api/guru', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                nama_guru: 'Guru Baru',
+                nama_guru: 'Pak Dhanang',
                 mapel: 'Informatika'
             })
         });
 
-        // 4. Mengubah data
+        // Mengubah data
         fetch('/api/guru/1', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                nama_guru: 'Guru Terupdate',
-                mapel: 'Kecerdasan Buatan'
+                nama_guru: 'Pak Dhanang Putra',
+                mapel: 'DDK'
             })
         });
 
-        // 5. Menghapus data (ID 999 aman, tidak memicu cascade delete)
-        fetch('/api/guru/999', {
+        // Menghapus data
+        fetch('/api/guru/20', {
             method: 'DELETE'
         });
     </script>

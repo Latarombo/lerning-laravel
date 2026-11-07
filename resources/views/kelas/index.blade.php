@@ -35,14 +35,14 @@
     {{ $kelass->links() }}
 
     <script>
-        // 1. Mengambil data
+        // Mengambil data
         fetch('/api/kelas')
             .then(response => response.json())
             .then(data => {
                 console.log(data);
             });
 
-        // 2. Menampilkan data
+        // Menampilkan data
         fetch('/api/kelas')
             .then(res => res.json())
             .then(result => {
@@ -62,32 +62,32 @@
                 document.getElementById('tbody').innerHTML = html;
             });
 
-        // 3. Menambah data
+        // Menambah data
         fetch('/api/kelas', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                nama_kelas: 'X PPLG 1',
+                nama_kelas: 'X TKJ A',
                 guru_id: {{ $guru->first()->id ?? 1 }}
             })
         });
 
-        // 4. Mengubah data
+        // Mengubah data
         fetch('/api/kelas/1', {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                nama_kelas: 'X PPLG Terupdate',
+                nama_kelas: 'X RPL C',
                 guru_id: {{ $guru->first()->id ?? 1 }}
             })
         });
 
-        // 5. Menghapus data (ID 999 aman, tidak memicu cascade delete)
-        fetch('/api/kelas/999', {
+        // Menghapus data
+        fetch('/api/kelas/20', {
             method: 'DELETE'
         });
     </script>
