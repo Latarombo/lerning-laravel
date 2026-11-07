@@ -28,30 +28,71 @@
     </form>
 
     <table border="1">
-        <tr>
-            <th>Nomor</th>
-            <th>Nama guru</th>
-            <th>Mata pelajaran</th>
-            <th>Action</th>
-        </tr>
-        @foreach ($gurus as $s)
+        <thead>
             <tr>
-                <td>{{ $loop->iteration + ($gurus->currentPage() - 1) * $gurus->perPage() }}  </td>
-                <td>{{ $s->nama_guru }}</td>
-                <td>{{ $s->mapel }}</td>
-                <td>
-                    <a href="{{ route('guru.edit', $s->id) }}" style="color:blue;">Edit</a> |
-
-                    <form action="{{ route('guru.destroy', $s->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" style="color:red;" onclick="return confirm('Yakin hapus?')">
-                            Hapus
-                        </button>
-                    </form>
-                </td>
+                <th>Nomor</th>
+                <th>Nama guru</th>
+                <th>Mata pelajaran</th>
             </tr>
-        @endforeach
+        </thead>
+        <tbody id="tbody">
+        </tbody>
     </table>
+
     {{ $gurus->links() }}
+
+    <script>
+        // 1. Mengambil data
+        fetch('/api/guru')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            });
+
+        // 2. Menampilkan data
+        fetch('/api/guru')
+            .then(res => res.json())
+            .then(result => {
+                let html = '';
+                result.data.forEach(function(item) {
+                    html += `
+                    <tr>
+                        <td>${item.id}</td>
+                        <td>${item.nama_guru}</td>
+                        <td>${item.mapel}</td>
+                    </tr>
+                    `;
+                });
+                document.getElementById('tbody').innerHTML = html;
+            });
+
+        // 3. Menambah data
+        fetch('/api/guru', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                nama_guru: 'Guru Baru',
+                mapel: 'Informatika'
+            })
+        });
+
+        // 4. Mengubah data
+        fetch('/api/guru/1', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                nama_guru: 'Guru Terupdate',
+                mapel: 'Kecerdasan Buatan'
+            })
+        });
+
+        // 5. Menghapus data (ID 999 aman, tidak memicu cascade delete)
+        fetch('/api/guru/999', {
+            method: 'DELETE'
+        });
+    </script>
 @endsection

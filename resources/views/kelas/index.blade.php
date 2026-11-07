@@ -9,8 +9,8 @@
     <h1 style="font-size: 26px; font-weight: 800; color: #111827; margin-bottom: 6px;">Data Kelas</h1>
 
     <p>Selamat datang di Sistem Informasi Data Kelas.</p>
-    <a
-        href="{{ route('kelas.create') }}"style="display:inline-block; margin-bottom:14px; padding:6px 14px; background-color:#2563eb; color:white; border-radius:4px;">Tambah
+    <a href="{{ route('kelas.create') }}"
+        style="display:inline-block; margin-bottom:14px; padding:6px 14px; background-color:#2563eb; color:white; border-radius:4px;">Tambah
         Kelas</a>
 
     {{-- Searchbar dan filter --}}
@@ -20,33 +20,75 @@
     </form>
 
     <table border="1">
-        <tr>
-            <th>Nomor</th>
-            <th>Kelas</th>
-            <th>Guru</th>
-            <th>Action</th>
-        </tr>
-        @foreach ($kelass as $s)
+        <thead>
             <tr>
-                <td>{{ $loop->iteration + ($kelass->currentPage() - 1) * $kelass->perPage() }}</td>
-                <td>{{ $s->nama_kelas }}</td>
-                <td>{{ $s->guru->nama_guru }}</td>
-                <td>
-                    <a href="{{ route('kelas.show', $s->id) }}" style="color:blue;">Detail
-                        Siswa</a> |
-
-                    <a href="{{ route('kelas.edit', $s->id) }}" style="color:blue;">Edit</a> |
-
-                    <form action="{{ route('kelas.destroy', $s->id) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" style="color:red;" onclick="return confirm('Yakin hapus?')">
-                            Hapus
-                        </button>
-                    </form>
-                </td>
+                <th>Nomor</th>
+                <th>Kelas</th>
+                <th>Guru</th>
+                <th>Action</th>
             </tr>
-        @endforeach
+        </thead>
+        <tbody id="tbody">
+        </tbody>
     </table>
+
     {{ $kelass->links() }}
+
+    <script>
+        // 1. Mengambil data
+        fetch('/api/kelas')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+            });
+
+        // 2. Menampilkan data
+        fetch('/api/kelas')
+            .then(res => res.json())
+            .then(result => {
+                let html = '';
+                result.data.forEach(function(item) {
+                    html += `
+                    <tr>
+                        <td>${item.id}</td>
+                        <td>${item.nama_kelas}</td>
+                        <td>${item.guru ? item.guru.nama_guru : '-'}</td>
+                        <td>
+                            <a href="/kelas/${item.id}" style="color: blue;">Detail Siswa</a>
+                        </td>
+                    </tr>
+                    `;
+                });
+                document.getElementById('tbody').innerHTML = html;
+            });
+
+        // 3. Menambah data
+        fetch('/api/kelas', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                nama_kelas: 'X PPLG 1',
+                guru_id: {{ $guru->first()->id ?? 1 }}
+            })
+        });
+
+        // 4. Mengubah data
+        fetch('/api/kelas/1', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                nama_kelas: 'X PPLG Terupdate',
+                guru_id: {{ $guru->first()->id ?? 1 }}
+            })
+        });
+
+        // 5. Menghapus data (ID 999 aman, tidak memicu cascade delete)
+        fetch('/api/kelas/999', {
+            method: 'DELETE'
+        });
+    </script>
 @endsection
